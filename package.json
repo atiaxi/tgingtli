@@ -1,0 +1,15 @@
+{
+  "name": "tgingtli",
+  "version": "0.0.1",
+  "description": "This Game Is Not Going To Load Itself",
+  "main": "index.js",
+  "repository": "",
+  "author": "Roger Ostrander",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-browserify": "~4.0.1",
+    "grunt-coffeeify": "~0.1.3"
+  }
+}
