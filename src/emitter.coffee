@@ -8,6 +8,7 @@ class Token extends Phaser.Sprite
   adopt: (@momentum, @frame) ->
     [ @pixelX, @pixelY ] = @grid.tileToPixel @momentum.x, @momentum.y
     @reset @pixelX, @pixelY
+    @nextTile()
 
   nextTile: ->
     @nextX = @momentum.dx + @momentum.x
@@ -37,21 +38,26 @@ class Emitter extends Phaser.Group
     @timeBetweenEmissions = 2
     @nextEmission = 2
 
-    @momentum = dx: 1, dy: 0, x: @tileX + 1, y: @tileY
+    @momentum = dx: 1, dy: 0, x: @tileX, y: @tileY
 
     [ @pixelX, @pixelY ] = @grid.tileToPixel @tileX, @tileY
 
     @setup()
 
   emit: ->
-    #@nextEmission += @timeBetweenEmissions
-    @nextEmission = 100000
-    console.log "Emitting"
+    @nextEmission += @timeBetweenEmissions
+    #@nextEmission = 100000
+    momentum =
+      x: @momentum.x + 1,
+      y: @momentum.y,
+      dx: @momentum.dx,
+      dy: @momentum.dy
     recycle = @getFirstDead()
     if recycle
-      recycle.adopt @momentum, @emits
+      recycle.adopt momentum, @emits
     else
-      @game.add.existing new Token @game, @grid, @momentum, @emits
+      token = new Token @game, @grid, momentum, @emits, this
+      @add token
 
   setup: ->
     @sprite = @game.add.sprite @pixelX, @pixelY, 'map_sprites', 5, this

@@ -1,10 +1,10 @@
 Emitter = require('./emitter.coffee')
 
 TILE_SIZE = 32
-# BOARD_WIDTH = 12
-# BOARD_HEIGHT = 12
-BOARD_WIDTH = 4
-BOARD_HEIGHT =3
+BOARD_WIDTH = 12
+BOARD_HEIGHT = 12
+# BOARD_WIDTH = 4
+# BOARD_HEIGHT =3
 
 
 class Selector extends Phaser.Group
@@ -70,7 +70,16 @@ class Grid extends Phaser.Group
     @heightInTiles = BOARD_HEIGHT
     @pixelsPerTile = TILE_SIZE
 
+    @addSinks()
     self
+
+  addSinks: ->
+    x = Math.floor BOARD_WIDTH / 2
+    y = Math.floor BOARD_HEIGHT / 2
+
+    @influences[x][y] = 5
+    console.log x, y
+    @map.putTile 5, x, y, @layer1
 
   cursorPos: ->
     @tileToPixel @cursorTilePos()...
@@ -104,6 +113,9 @@ class Grid extends Phaser.Group
       when 2 then result.dx = 1
       when 3 then result.dy = 1
       when 4 then result.dx = -1
+      when 5
+        result.dx = 3
+        token.kill()
     return result
 
 
