@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="10" height="10" tilewidth="32" tileheight="32">
+<map version="1.0" orientation="orthogonal" width="8" height="8" tilewidth="32" tileheight="32">
  <tileset firstgid="1" name="whitesquare" tilewidth="32" tileheight="32">
   <image source="../dist/assets/whitesquare.png" width="32" height="32"/>
  </tileset>
- <layer name="Tile Layer 1" width="10" height="10">
+ <tileset firstgid="2" name="small_g23015" tilewidth="32" tileheight="32">
+  <image source="small_g23015.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="3" name="small_g23042" tilewidth="32" tileheight="32">
+  <image source="small_g23042.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="4" name="small_g21526" tilewidth="32" tileheight="32">
+  <image source="small_g21526.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="5" name="small_g22978" tilewidth="32" tileheight="32">
+  <image source="small_g22978.png" width="32" height="32"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="8" height="8">
   <data encoding="base64" compression="zlib">
-   eJxjZBgFgwkAAAMgAAI=
+   eJxjZGBgYAJiFiBmBmJWhpEFAA9kABA=
   </data>
  </layer>
 </map>

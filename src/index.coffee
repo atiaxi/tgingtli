@@ -31,14 +31,15 @@ class PreloadState extends Phaser.State
     # TODO: All the stuff to preload
     #@load.image 'whitesquare', 'assets/whitesquare.png'
     @load.image 'map', 'assets/map.png'
-
+    # Our tile map are also our sprites
+    @load.spritesheet 'map_sprites', 'assets/map.png', 32, 32
 
 
   create: ->
     @game.state.start 'playing'
 
 main = ->
-  game = new Phaser.Game 800, 600, Phaser.AUTO, 'game'
+  game = new Phaser.Game 800, 650, Phaser.AUTO, 'game'
 
   game.state.add 'boot', BootState
   game.state.add 'preload', PreloadState
