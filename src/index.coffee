@@ -1,6 +1,7 @@
-GameState = require('./game.coffee');
-GameOverState = require('./gameover.coffee');
-LevelsState = require('./levels.coffee');
+TitleState = require('./title.coffee')
+GameState = require('./game.coffee')
+GameOverState = require('./gameover.coffee')
+LevelsState = require('./levels.coffee')
 
 # We heard you liked preloaders, so we're preloading the
 # preloading screen
@@ -30,20 +31,22 @@ class PreloadState extends Phaser.State
     @load.setPreloadSprite @preloadBar
 
     # TODO: All the stuff to preload
-    #@load.image 'whitesquare', 'assets/whitesquare.png'
+    @load.image 'bg', 'assets/bg.png'
+    @load.image 'title_screen', 'assets/title.png'
     @load.image 'map', 'assets/map.png'
     # Our tile map are also our sprites
     @load.spritesheet 'map_sprites', 'assets/map.png', 32, 32
 
 
   create: ->
-    @game.state.start 'playing'
+    @game.state.start 'title'
 
 main = ->
   game = new Phaser.Game 800, 650, Phaser.AUTO, 'game'
 
   game.state.add 'boot', BootState
   game.state.add 'preload', PreloadState
+  game.state.add 'title', TitleState
   game.state.add 'playing', GameState
   game.state.add 'levels', LevelsState
   game.state.add 'gameover', GameOverState

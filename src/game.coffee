@@ -182,6 +182,7 @@ class GameState extends Phaser.State
     # Start us off
     @addEmitter()
 
+
   setProgress: (amount) ->
     @progress = amount
     @barfg_crop.width = @barfg.original_width * (@progress / @difficulty)

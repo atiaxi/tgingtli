@@ -3,12 +3,29 @@
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
     <title>This Game Is Not Going To Load Itself!</title>
+    <!-- Courtesy http://www.melkybee.com/blog/2015/04/26/adding-custom-fonts-in-phaser/ -->
+    <style>
+        @font-face {
+          font-family: 'unique'; src: url('assets/Unique.ttf');
+        }
+        #game_div {
+          margin: auto;
+          background: #000;
+        }
+        #preload-font {
+          font-family: 'unique', sans-serif;
+          text-indent: -9999px;
+          font-size: 0;
+        }
+    </style>
+
     <script src="lib/phaser.js"></script>
     <script src="lib/tgingtli.js"></script>
 </head>
 
 <body>
-    Hurf durf
+  WERG
+    <span id="preload-font"></span>
 </body>
 
 </html>

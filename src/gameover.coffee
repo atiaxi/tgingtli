@@ -3,7 +3,7 @@ class GameOverState extends Phaser.State
 
   create: ->
     style =
-      font: 'bold 64px Arial',
+      font: 'bold 64px Unique',
       fill: '#FFF'
 
     @text = @game.add.text @game.width / 2, @game.height / 2,
