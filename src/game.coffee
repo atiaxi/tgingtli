@@ -1,7 +1,10 @@
+Emitter = require('./emitter.coffee')
 
 TILE_SIZE = 32
-BOARD_WIDTH = 12
-BOARD_HEIGHT = 12
+# BOARD_WIDTH = 12
+# BOARD_HEIGHT = 12
+BOARD_WIDTH = 4
+BOARD_HEIGHT =3
 
 
 class Selector extends Phaser.Group
@@ -17,8 +20,6 @@ class Selector extends Phaser.Group
       'a': Phaser.KeyCode.A,
       's': Phaser.KeyCode.S,
       'd': Phaser.KeyCode.D
-
-    console.log @keys
 
     @keys.w.onDown.add =>
       @select(1)
@@ -56,8 +57,18 @@ class Grid extends Phaser.Group
     @layer1.position.set x, y
 
     # Fill the tilemap up with blanks
-    @map.putTile(0, x, y, @layer1) for x in [0..BOARD_WIDTH] \
-      for y in [0..BOARD_HEIGHT]
+    @map.putTile(0, x, y, @layer1) for x in [0...BOARD_WIDTH] \
+      for y in [0...BOARD_HEIGHT]
+
+    @influences =
+      0 for _ in [0...BOARD_HEIGHT] for _ in [0...BOARD_WIDTH]
+
+    console.log(@influences)
+
+    # Emitter will use some of this info
+    @widthInTiles = BOARD_WIDTH
+    @heightInTiles = BOARD_HEIGHT
+    @pixelsPerTile = TILE_SIZE
 
     self
 
@@ -75,6 +86,27 @@ class Grid extends Phaser.Group
     tileY = BOARD_HEIGHT - 1 if tileY >= BOARD_HEIGHT
     return [tileX, tileY]
 
+  isOutOfBounds: (tileX, tileY) ->
+    return true if tileX < 0 or tileX >= BOARD_WIDTH
+    return true if tileY < 0 or tileY >= BOARD_HEIGHT
+    return false
+
+  momentumChangeForToken: (token) ->
+    influence = @influences[token.momentum.x][token.momentum.y]
+    return token.momentum unless influence
+    result =
+      x: token.momentum.x,
+      y: token.momentum.y,
+      dx: 0,
+      dy: 0
+    switch influence
+      when 1 then result.dy = -1
+      when 2 then result.dx = 1
+      when 3 then result.dy = 1
+      when 4 then result.dx = -1
+    return result
+
+
   pixelToTile: (pixelX, pixelY) ->
     # Offset pixel locs by current loc
     # Can't use built in getTileX because they assume tilemap
@@ -89,6 +121,7 @@ class Grid extends Phaser.Group
   placeTileAtCursor: (tileNum) ->
     [tileX, tileY] = @cursorTilePos()
     @map.putTile tileNum, tileX, tileY, @layer1
+    @influences[tileX][tileY] = tileNum
 
   tileToPixel: (tileX, tileY) ->
     pixelX = @layer1.x + (tileX * TILE_SIZE)
@@ -97,6 +130,15 @@ class Grid extends Phaser.Group
 
 
 class GameState extends Phaser.State
+
+  addEmitter: ->
+    # For now, we're just going to put them in the upper left
+    emitX = -2
+    emitY = 0
+
+    emitter = new Emitter @game, emitX, emitY, @grid
+    @game.add.existing emitter
+
   create: ->
     @grid = new Grid(@game)
     #@grid.create()
@@ -109,6 +151,9 @@ class GameState extends Phaser.State
     @selector.onSelect.add (number) =>
       @cursor.frame = number
     @game.add.existing @selector
+
+    # Start us off
+    @addEmitter()
 
   update: ->
     [x, y] = @grid.cursorPos()
