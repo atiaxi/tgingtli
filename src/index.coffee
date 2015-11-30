@@ -1,5 +1,6 @@
-GameState = require("./game.coffee");
-
+GameState = require('./game.coffee');
+GameOverState = require('./gameover.coffee');
+LevelsState = require('./levels.coffee');
 
 # We heard you liked preloaders, so we're preloading the
 # preloading screen
@@ -44,6 +45,8 @@ main = ->
   game.state.add 'boot', BootState
   game.state.add 'preload', PreloadState
   game.state.add 'playing', GameState
+  game.state.add 'levels', LevelsState
+  game.state.add 'gameover', GameOverState
 
   game.state.start 'boot'
 

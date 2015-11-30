@@ -37,7 +37,7 @@ class Selector extends Phaser.Group
 
 class Grid extends Phaser.Group
 
-  constructor: (@game) ->
+  constructor: (@game, @state) ->
     super @game
     @setup()
 
@@ -63,14 +63,13 @@ class Grid extends Phaser.Group
     @influences =
       0 for _ in [0...BOARD_HEIGHT] for _ in [0...BOARD_WIDTH]
 
-    console.log(@influences)
-
     # Emitter will use some of this info
     @widthInTiles = BOARD_WIDTH
     @heightInTiles = BOARD_HEIGHT
     @pixelsPerTile = TILE_SIZE
 
     @addSinks()
+
     self
 
   addSinks: ->
@@ -78,7 +77,6 @@ class Grid extends Phaser.Group
     y = Math.floor BOARD_HEIGHT / 2
 
     @influences[x][y] = 5
-    console.log x, y
     @map.putTile 5, x, y, @layer1
 
   cursorPos: ->
@@ -114,7 +112,7 @@ class Grid extends Phaser.Group
       when 3 then result.dy = 1
       when 4 then result.dx = -1
       when 5
-        result.dx = 3
+        @state.addProgress 1
         token.kill()
     return result
 
@@ -151,8 +149,11 @@ class GameState extends Phaser.State
     emitter = new Emitter @game, emitX, emitY, @grid
     @game.add.existing emitter
 
+  addProgress: (amount) ->
+    @setProgress @progress + amount
+
   create: ->
-    @grid = new Grid(@game)
+    @grid = new Grid(@game, this)
     #@grid.create()
     @game.add.existing @grid
 
@@ -164,8 +165,32 @@ class GameState extends Phaser.State
       @cursor.frame = number
     @game.add.existing @selector
 
+    # The loading bar.  You know, the whole point.
+    @progress = 0
+    @difficulty = 10
+    @barbg = @game.add.sprite 10, @game.height - 10, 'preloaderBg'
+    @barbg.width = @game.width - 20
+    @barbg.anchor.set 0, 1
+
+    @barfg = @game.add.sprite 10, @game.height - 10, 'preloaderBar'
+    @barfg.original_width = @barfg.width
+    @barfg.width = @game.width - 20
+    @barfg.anchor.set 0, 1
+    @barfg_crop = new Phaser.Rectangle 0, 0, 0, @barfg.height
+    @setProgress(1)
+
     # Start us off
     @addEmitter()
+
+  setProgress: (amount) ->
+    @progress = amount
+    @barfg_crop.width = @barfg.original_width * (@progress / @difficulty)
+    @barfg.crop(@barfg_crop)
+
+    if @progress < 0
+      @game.state.start 'gameover'
+    if @progress >= @difficulty
+      @game.state.start 'levels', true, false, 2
 
   update: ->
     [x, y] = @grid.cursorPos()

@@ -23,11 +23,11 @@ class Token extends Phaser.Sprite
       @momentum.x = @nextX
       @momentum.y = @nextY
       if @grid.isOutOfBounds @momentum.x, @momentum.y
-        # TODO: Something about this
+        @grid.state.addProgress -1
         this.kill()
       else
         @momentum = @grid.momentumChangeForToken this
-        @nextTile()
+        @nextTile() if @alive
     )
     @tween.start()
 
