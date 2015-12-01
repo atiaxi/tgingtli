@@ -32,25 +32,33 @@ class Token extends Phaser.Sprite
     @tween.start()
 
 class Emitter extends Phaser.Group
-  constructor: (@game, @tileX, @tileY, @grid) ->
+  constructor: (@game, @grid, @momentum) ->
     super(@game)
     @emits = 5
     @timeBetweenEmissions = 2
-    @nextEmission = 2
+    @nextEmission = 5
+    @appearing = true
+    @blinks = 0.5
+    @nextBlink = 0.5
 
-    @momentum = dx: 1, dy: 0, x: @tileX, y: @tileY
-
-    [ @pixelX, @pixelY ] = @grid.tileToPixel @tileX, @tileY
-
+    [ @pixelX, @pixelY ] = @grid.tileToPixel @momentum.x, @momentum.y
     @setup()
+
+  blink: ->
+    @nextBlink = @blinks
+    if @nextEmission < 0.5
+      @appearing = false
+      @visible = true
+    else
+      @visible = !@visible
 
   emit: ->
     @timeBetweenEmissions -= 0.001 if @timeBetweenEmissions > 0.5
     @nextEmission += @timeBetweenEmissions
     #@nextEmission = 100000
     momentum =
-      x: @momentum.x + 1,
-      y: @momentum.y,
+      x: @momentum.x + @momentum.dx,
+      y: @momentum.y + @momentum.dy,
       dx: @momentum.dx,
       dy: @momentum.dy
     recycle = @getFirstDead()
@@ -66,5 +74,8 @@ class Emitter extends Phaser.Group
   update: ->
     @nextEmission -= @game.time.physicsElapsed
     @emit() if @nextEmission <= 0
+    if @appearing
+      @nextBlink -= @game.time.physicsElapsed
+      @blink() if @nextBlink < 0
 
 module.exports = Emitter

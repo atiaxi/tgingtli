@@ -6,6 +6,17 @@ BOARD_HEIGHT = 12
 # BOARD_WIDTH = 4
 # BOARD_HEIGHT =3
 
+# Utility random stuff, probably refactor out at some point
+randInt = (max) ->
+  # Between zero and max, exclusive
+  Math.floor Math.random() * max
+
+randIndex = (ary) ->
+  randInt ary.length
+
+randFromArray = (ary) ->
+  index = randIndex(ary)
+  return ary[index]
 
 class Selector extends Phaser.Group
   constructor: (@game, @cursor) ->
@@ -145,11 +156,28 @@ class Grid extends Phaser.Group
 class GameState extends Phaser.State
 
   addEmitter: ->
-    # For now, we're just going to put them in the upper left
-    emitX = -2
-    emitY = 0
+    @numEmitters += 1
+    if @numEmitters >= @level
+      @timeBetweenEmitters = 10
 
-    emitter = new Emitter @game, emitX, emitY, @grid
+    @nextEmitter = @timeBetweenEmitters
+
+
+    side = null
+    until side
+      side = randFromArray @choices
+
+    chosen_index = randIndex side.choices
+
+    # Array dereference there because splice always returns an array
+    chosen = side.choices.splice(chosen_index, 1)[0]
+
+    momentum =
+      x: chosen[0],
+      y: chosen[1],
+      dx: side.dx,
+      dy: side.dy
+    emitter = new Emitter @game, @grid, momentum
     @game.add.existing emitter
 
   addProgress: (amount) ->
@@ -182,7 +210,11 @@ class GameState extends Phaser.State
     @barfg_crop = new Phaser.Rectangle 0, 0, 0, @barfg.height
     @setProgress(1)
 
+    @populateEmitterChoices()
+
     # Start us off
+    @numEmitters = 0
+    @timeBetweenEmitters = 5
     @addEmitter()
 
   difficultyForLevel: (number) ->
@@ -202,6 +234,18 @@ class GameState extends Phaser.State
     if @progress >= @difficulty
       @game.state.start 'levels', true, false, @level+1
 
+  populateEmitterChoices: ->
+    left = ([-2, y] for y in [0...BOARD_HEIGHT])
+    right = ([BOARD_WIDTH + 1, y] for y in [0...BOARD_HEIGHT])
+    top = ([x, -2] for x in [0...BOARD_WIDTH])
+    bottom = ([x, BOARD_HEIGHT + 1] for x in [0...BOARD_WIDTH])
+    @choices = [
+      { dx:  1, dy:  0, choices: left},
+      { dx: -1, dy:  0, choices: right},
+      { dx:  0, dy:  1, choices: top},
+      { dx:  0, dy: -1, choices: bottom},
+    ]
+
   update: ->
     [x, y, influence] = @grid.cursorPos()
     @cursor.x = x
@@ -209,5 +253,9 @@ class GameState extends Phaser.State
 
     if @game.input.activePointer.isDown and influence == 0
       @grid.placeTileAtCursor(@cursor.frame)
+
+    @nextEmitter -= @game.time.physicsElapsed
+
+    @addEmitter() if @nextEmitter <= 0
 
 module.exports = GameState
