@@ -80,7 +80,10 @@ class Grid extends Phaser.Group
     @map.putTile 5, x, y, @layer1
 
   cursorPos: ->
-    @tileToPixel @cursorTilePos()...
+    [tx, ty] = @cursorTilePos()
+    [x, y] = @tileToPixel tx, ty
+    influence = @influences[tx][ty] if @influences
+    return [x, y, influence]
 
   cursorTilePos: ->
     pointerX = @game.input.activePointer.worldX
@@ -153,9 +156,10 @@ class GameState extends Phaser.State
     @setProgress @progress + amount
 
   create: ->
+    @bg = @game.add.sprite 0, 0, 'bg'
+
     @grid = new Grid(@game, this)
-    #@grid.create()
-    @game.add.existing @grid
+    #@game.add.existing @grid
 
     # Arrows to follow the mouse around
     @cursor = @game.add.sprite 0, 0, 'map_sprites', 1
@@ -167,7 +171,6 @@ class GameState extends Phaser.State
 
     # The loading bar.  You know, the whole point.
     @progress = 0
-    @difficulty = 10
     @barbg = @game.add.sprite 10, @game.height - 10, 'preloaderBg'
     @barbg.width = @game.width - 20
     @barbg.anchor.set 0, 1
@@ -182,6 +185,12 @@ class GameState extends Phaser.State
     # Start us off
     @addEmitter()
 
+  difficultyForLevel: (number) ->
+    return 10 if number == 1
+    return @difficultyForLevel(number-1) + 5 * number
+
+  init: (@level) ->
+    @difficulty = @difficultyForLevel @level
 
   setProgress: (amount) ->
     @progress = amount
@@ -191,14 +200,14 @@ class GameState extends Phaser.State
     if @progress < 0
       @game.state.start 'gameover'
     if @progress >= @difficulty
-      @game.state.start 'levels', true, false, 2
+      @game.state.start 'levels', true, false, @level+1
 
   update: ->
-    [x, y] = @grid.cursorPos()
+    [x, y, influence] = @grid.cursorPos()
     @cursor.x = x
     @cursor.y = y
 
-    if @game.input.activePointer.isDown
+    if @game.input.activePointer.isDown and influence == 0
       @grid.placeTileAtCursor(@cursor.frame)
 
 module.exports = GameState

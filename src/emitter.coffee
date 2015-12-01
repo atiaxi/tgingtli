@@ -45,6 +45,7 @@ class Emitter extends Phaser.Group
     @setup()
 
   emit: ->
+    @timeBetweenEmissions -= 0.001 if @timeBetweenEmissions > 0.5
     @nextEmission += @timeBetweenEmissions
     #@nextEmission = 100000
     momentum =

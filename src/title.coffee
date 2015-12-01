@@ -13,7 +13,7 @@ class TitleState extends Phaser.State
     @start.anchor.set 0.5, 1
 
   nextState: ->
-    @game.state.start 'playing'
+    @game.state.start 'playing', true, false, 1
 
   update: ->
     @nextState() if @game.input.activePointer.isDown
