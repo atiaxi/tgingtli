@@ -1,4 +1,5 @@
 Emitter = require('./emitter.coffee')
+utils = require('./utils.coffee')
 
 TILE_SIZE = 32
 BOARD_WIDTH = 12
@@ -7,28 +8,13 @@ BOARD_HEIGHT = 12
 # BOARD_HEIGHT =3
 PHASES = 3
 
-# Utility random stuff, probably refactor out at some point
-randInt = (max) ->
-  max = Math.floor(max)
-  # Between zero and max, exclusive
-  Math.floor Math.random() * max
+console.log utils
+randInt = utils.randInt
+randIndex = utils.randIndex
+randFromArray = utils.randFromArray
+takeRandFromArray = utils.takeRandFromArray
+mod = utils.mod
 
-randIndex = (ary) ->
-  randInt ary.length
-
-randFromArray = (ary) ->
-  index = randIndex(ary)
-  return ary[index]
-
-takeRandFromArray = (ary) ->
-  chosen_index = randIndex ary
-  ary.splice(chosen_index, 1)[0]
-
-# And also, Javascript modulo doesn't behave the way I want
-# Credit to http://javascript.about.com/od/problemsolving/a/modulobug.htm
-# This behaves like python's num1 % num2
-mod = (num1, num2) ->
-  return ((num1%num2)+num2)%num2;
 
 class Selector extends Phaser.Group
   constructor: (@game, @cursor) ->
@@ -79,7 +65,6 @@ class Selector extends Phaser.Group
 
     col = (5 + TILE_SIZE * x for x in [0...3])
     row = (5 + TILE_SIZE * y for y in [0...4])
-    console.log "ROW", row
 
     style =
       font: "bold #{TILE_SIZE}px Unique",
@@ -263,9 +248,8 @@ class GameState extends Phaser.State
       y: chosen[1],
       dx: side.dx,
       dy: side.dy
-    #emitting = 5
-    #if @level > 5
-    emitting = randFromArray [5, 10, 15]
+
+    emitting = [randFromArray([5, 10, 15]), randFromArray [5, 10, 15]]
 
     emitter = new Emitter @game, @grid, momentum, emitting
     @game.add.existing emitter
@@ -290,11 +274,11 @@ class GameState extends Phaser.State
 
     # The loading bar.  You know, the whole point.
     @progress = 0
-    @barbg = @game.add.sprite 10, @game.height - 10, 'preloaderBg'
+    @barbg = @game.add.sprite 10, @game.height - 5, 'preloaderBg'
     @barbg.width = @game.width - 20
     @barbg.anchor.set 0, 1
 
-    @barfg = @game.add.sprite 10, @game.height - 10, 'preloaderBar'
+    @barfg = @game.add.sprite 10, @game.height - 5, 'preloaderBar'
     @barfg.original_width = @barfg.width
     @barfg.width = @game.width - 20
     @barfg.anchor.set 0, 1

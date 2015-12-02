@@ -1,3 +1,4 @@
+utils = require './utils.coffee'
 
 class Token extends Phaser.Sprite
   constructor: (@game, @grid, @momentum, frame) ->
@@ -67,11 +68,18 @@ class Emitter extends Phaser.Group
     if recycle
       recycle.adopt momentum, @emits
     else
-      token = new Token @game, @grid, momentum, @emits, this
+      toEmit = utils.randFromArray @emits
+      token = new Token @game, @grid, momentum, toEmit, this
       @add token
 
   setup: ->
-    @sprite = @game.add.sprite @pixelX, @pixelY, 'map_sprites', @emits, this
+    icon = @emits[0]
+    @sprite = @game.add.sprite @pixelX, @pixelY, 'map_sprites', icon, this
+    if @emits[1]
+      icon = @emits[1]
+      nx = @pixelX + -@momentum.dx * @grid.pixelsPerTile
+      ny = @pixelY + -@momentum.dy * @grid.pixelsPerTile
+      @game.add.sprite nx, ny, 'map_sprites', icon, this
 
   update: ->
     @nextEmission -= @game.time.physicsElapsed
