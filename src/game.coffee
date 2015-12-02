@@ -167,6 +167,11 @@ class Grid extends Phaser.Group
       @influences[x][y] = frame
       @map.putTile frame, x, y, @layer1
 
+      # Put an outline around them, so they can be spotted
+      [px, py] = @tileToPixel x, y
+      highlight = @game.add.sprite px, py, 'map_sprites', 0
+      highlight.tint = 0x000000
+
     placeSink 5
     placeSink 10
     placeSink 15
@@ -276,6 +281,7 @@ class GameState extends Phaser.State
 
     # Arrows to follow the mouse around
     @cursor = @game.add.sprite 0, 0, 'map_sprites', 1
+    @cursor.alpha = 0.5
 
     @selector = new Selector @game, @cursor
     @selector.onSelect.add (number) =>
