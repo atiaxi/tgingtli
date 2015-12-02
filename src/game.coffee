@@ -293,7 +293,7 @@ class GameState extends Phaser.State
     @barfg.width = @game.width - 20
     @barfg.anchor.set 0, 1
     @barfg_crop = new Phaser.Rectangle 0, 0, 0, @barfg.height
-    @setProgress(1)
+    @setProgress(Math.max(@level, 3))
 
     @populateEmitterChoices()
 

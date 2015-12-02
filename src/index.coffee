@@ -36,6 +36,7 @@ class PreloadState extends Phaser.State
     @load.image 'map', 'assets/map.png'
     # Our tile map are also our sprites
     @load.spritesheet 'map_sprites', 'assets/map.png', 32, 32
+    @load.audio('bgmusic', ['assets/Pamgaea.mp3', 'assets/Pamgaea.ogg']);
 
 
   create: ->
