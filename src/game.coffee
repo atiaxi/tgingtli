@@ -5,7 +5,7 @@ BOARD_WIDTH = 12
 BOARD_HEIGHT = 12
 # BOARD_WIDTH = 4
 # BOARD_HEIGHT =3
-PHASES = 2
+PHASES = 3
 
 # Utility random stuff, probably refactor out at some point
 randInt = (max) ->
@@ -158,6 +158,8 @@ class Grid extends Phaser.Group
   addSinks: ->
     allX = (x for x in [2...BOARD_WIDTH-2])
     allY = (y for y in [2...BOARD_HEIGHT-2])
+    # Purposely choosing locations this way so that sinks are guaranteed
+    # to have a row and column to themselves
 
     placeSink = (frame) =>
       x = takeRandFromArray(allX)
@@ -167,6 +169,7 @@ class Grid extends Phaser.Group
 
     placeSink 5
     placeSink 10
+    placeSink 15
 
   cursorPos: ->
     [tx, ty] = @cursorTilePos()
@@ -257,7 +260,7 @@ class GameState extends Phaser.State
       dy: side.dy
     #emitting = 5
     #if @level > 5
-    emitting = randFromArray [5, 10]
+    emitting = randFromArray [5, 10, 15]
 
     emitter = new Emitter @game, @grid, momentum, emitting
     @game.add.existing emitter
