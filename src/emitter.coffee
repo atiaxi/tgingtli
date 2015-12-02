@@ -1,11 +1,13 @@
 
 class Token extends Phaser.Sprite
   constructor: (@game, @grid, @momentum, frame) ->
+    @phase = Math.floor (frame-1) / 5
     [ @pixelX, @pixelY ] = @grid.tileToPixel @momentum.x, @momentum.y
     super @game, @pixelX, @pixelY, 'map_sprites', frame
     @nextTile()
 
   adopt: (@momentum, @frame) ->
+    @phase = Math.floor (@frame-1) / 5
     [ @pixelX, @pixelY ] = @grid.tileToPixel @momentum.x, @momentum.y
     @reset @pixelX, @pixelY
     @nextTile()
@@ -31,10 +33,10 @@ class Token extends Phaser.Sprite
     )
     @tween.start()
 
+
 class Emitter extends Phaser.Group
-  constructor: (@game, @grid, @momentum) ->
+  constructor: (@game, @grid, @momentum, @emits) ->
     super(@game)
-    @emits = 5
     @timeBetweenEmissions = 2
     @nextEmission = 5
     @appearing = true
@@ -69,7 +71,7 @@ class Emitter extends Phaser.Group
       @add token
 
   setup: ->
-    @sprite = @game.add.sprite @pixelX, @pixelY, 'map_sprites', 5, this
+    @sprite = @game.add.sprite @pixelX, @pixelY, 'map_sprites', @emits, this
 
   update: ->
     @nextEmission -= @game.time.physicsElapsed

@@ -5,9 +5,11 @@ BOARD_WIDTH = 12
 BOARD_HEIGHT = 12
 # BOARD_WIDTH = 4
 # BOARD_HEIGHT =3
+PHASES = 2
 
 # Utility random stuff, probably refactor out at some point
 randInt = (max) ->
+  max = Math.floor(max)
   # Between zero and max, exclusive
   Math.floor Math.random() * max
 
@@ -18,19 +20,49 @@ randFromArray = (ary) ->
   index = randIndex(ary)
   return ary[index]
 
+takeRandFromArray = (ary) ->
+  chosen_index = randIndex ary
+  ary.splice(chosen_index, 1)[0]
+
+# And also, Javascript modulo doesn't behave the way I want
+# Credit to http://javascript.about.com/od/problemsolving/a/modulobug.htm
+# This behaves like python's num1 % num2
+mod = (num1, num2) ->
+  return ((num1%num2)+num2)%num2;
+
 class Selector extends Phaser.Group
   constructor: (@game, @cursor) ->
     super(@game)
+    @phase = 0
     @selected = 1
+    @dirSelected = 1
     @onSelect = new Phaser.Signal
     @setup()
+
+  iconForPhase: (phase) ->
+    phase = mod phase, PHASES
+    phase * 5 + 5
+
+  numberForPhase: (num) ->
+    @phase * 5 + num
+
+  phasedToDirection: (phased, context) ->
+    return 0 if phased == 0
+    phase = Math.floor (phased-1) / 5
+    result = phased - phase * 5
+    if context and context.phase != phase
+      return -1 if result == 5  # Delivered to the wrong sink
+      return 0
+    result
 
   setup: ->
     @keys = @game.input.keyboard.addKeys
       'w': Phaser.KeyCode.W,
       'a': Phaser.KeyCode.A,
       's': Phaser.KeyCode.S,
-      'd': Phaser.KeyCode.D
+      'd': Phaser.KeyCode.D,
+      'q': Phaser.KeyCode.Q,
+      'e': Phaser.KeyCode.E
 
     @keys.w.onDown.add =>
       @select(1)
@@ -40,10 +72,50 @@ class Selector extends Phaser.Group
       @select(3)
     @keys.a.onDown.add =>
       @select(4)
+    @keys.q.onDown.add =>
+      @shift(-1)
+    @keys.e.onDown.add =>
+      @shift(1)
+
+    col = (5 + TILE_SIZE * x for x in [0...3])
+    row = (5 + TILE_SIZE * y for y in [0...4])
+    console.log "ROW", row
+
+    style =
+      font: "bold #{TILE_SIZE}px Unique",
+      fill: "#fff"
+
+    w_icon = @game.add.sprite col[1], row[1], 'map_sprites', 1
+    w_letter = @game.add.text col[1], row[0], 'W', style
+    a_icon = @game.add.sprite col[0], row[2], 'map_sprites', 4
+    a_letter = @game.add.text col[0], row[3], 'A', style
+    s_icon = @game.add.sprite col[1], row[2], 'map_sprites', 3
+    s_letter = @game.add.text col[1], row[3], 'S', style
+    d_icon = @game.add.sprite col[2], row[2], 'map_sprites', 2
+    d_letter = @game.add.text col[2], row[3], 'D', style
+
+    @q_icon = @game.add.sprite col[0], row[1], 'map_sprites', @iconForPhase(-1)
+    q_letter = @game.add.text  col[0], row[0], 'Q', style
+    @e_icon = @game.add.sprite col[2], row[1], 'map_sprites', @iconForPhase(1)
+    e_letter = @game.add.text  col[2], row[0], 'E', style
+
+    @icons = [w_icon, d_icon, s_icon, a_icon]
+
+  shift: (direction) ->
+    @phase = mod (@phase + direction), PHASES
+    for icon, i in @icons
+      icon.frame = @numberForPhase i+1
+
+    @q_icon.frame = @iconForPhase(@phase - 1)
+    @e_icon.frame = @iconForPhase(@phase + 1)
+
+    # Let the cursor know we swapped palletes.
+    @select @dirSelected
 
   select: (number) ->
-    @selected = number
-    @onSelect.dispatch(number)
+    @dirSelected = number
+    @selected = @numberForPhase number
+    @onSelect.dispatch @selected
 
 
 class Grid extends Phaser.Group
@@ -84,11 +156,17 @@ class Grid extends Phaser.Group
     self
 
   addSinks: ->
-    x = Math.floor BOARD_WIDTH / 2
-    y = Math.floor BOARD_HEIGHT / 2
+    allX = (x for x in [2...BOARD_WIDTH-2])
+    allY = (y for y in [2...BOARD_HEIGHT-2])
 
-    @influences[x][y] = 5
-    @map.putTile 5, x, y, @layer1
+    placeSink = (frame) =>
+      x = takeRandFromArray(allX)
+      y = takeRandFromArray(allY)
+      @influences[x][y] = frame
+      @map.putTile frame, x, y, @layer1
+
+    placeSink 5
+    placeSink 10
 
   cursorPos: ->
     [tx, ty] = @cursorTilePos()
@@ -114,6 +192,7 @@ class Grid extends Phaser.Group
 
   momentumChangeForToken: (token) ->
     influence = @influences[token.momentum.x][token.momentum.y]
+    influence = @state.selector.phasedToDirection influence, token
     return token.momentum unless influence
     result =
       x: token.momentum.x,
@@ -127,6 +206,9 @@ class Grid extends Phaser.Group
       when 4 then result.dx = -1
       when 5
         @state.addProgress 1
+        token.kill()
+      when -1
+        @state.addProgress -1
         token.kill()
     return result
 
@@ -162,22 +244,22 @@ class GameState extends Phaser.State
 
     @nextEmitter = @timeBetweenEmitters
 
-
     side = null
     until side
       side = randFromArray @choices
 
-    chosen_index = randIndex side.choices
-
-    # Array dereference there because splice always returns an array
-    chosen = side.choices.splice(chosen_index, 1)[0]
+    chosen = takeRandFromArray side.choices
 
     momentum =
       x: chosen[0],
       y: chosen[1],
       dx: side.dx,
       dy: side.dy
-    emitter = new Emitter @game, @grid, momentum
+    #emitting = 5
+    #if @level > 5
+    emitting = randFromArray [5, 10]
+
+    emitter = new Emitter @game, @grid, momentum, emitting
     @game.add.existing emitter
 
   addProgress: (amount) ->

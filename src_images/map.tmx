@@ -18,9 +18,39 @@
  <tileset firstgid="6" name="small_g22581" tilewidth="32" tileheight="32">
   <image source="small_g22581.png" width="32" height="32"/>
  </tileset>
+ <tileset firstgid="7" name="small_g21263" tilewidth="32" tileheight="32">
+  <image source="small_g21263.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="8" name="small_g21272" tilewidth="32" tileheight="32">
+  <image source="small_g21272.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="9" name="small_g21245" tilewidth="32" tileheight="32">
+  <image source="small_g21245.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="10" name="small_g22987" tilewidth="32" tileheight="32">
+  <image source="small_g22987.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="11" name="small_g22294" tilewidth="32" tileheight="32">
+  <image source="small_g22294.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="12" name="small_g23006" tilewidth="32" tileheight="32">
+  <image source="small_g23006.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="13" name="small_g21584" tilewidth="32" tileheight="32">
+  <image source="small_g21584.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="14" name="small_g23033" tilewidth="32" tileheight="32">
+  <image source="small_g23033.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="15" name="small_g22969" tilewidth="32" tileheight="32">
+  <image source="small_g22969.png" width="32" height="32"/>
+ </tileset>
+ <tileset firstgid="16" name="small_g22357" tilewidth="32" tileheight="32">
+  <image source="small_g22357.png" width="32" height="32"/>
+ </tileset>
  <layer name="Tile Layer 1" width="8" height="8">
   <data encoding="base64" compression="zlib">
-   eJxjZGBgYAJiFiBmBmJWIGZjGDkAABTsABY=
+   eJzVw4cNACAMBLGnhR7Yf1puDSw5SIrMTCw0VnY2Dk4ubjoPr/73AHPIAIk=
   </data>
  </layer>
 </map>
