@@ -19,12 +19,18 @@ class TitleState extends Phaser.State
     instructions = @game.add.button x, y,
       'instructions', @instructions, this, 0, 1, 1, 1
 
+    credits = @game.add.button x, y + 65,
+      'credits_button', @credits, this, 0, 1, 1, 1
+
     unless @game.pamgaea_music
       @game.pamgaea_music = @game.add.audio 'bgmusic', 1, true
       @game.pamgaea_music.play()
 
   instructions: ->
     @game.state.start 'instructions_state'
+
+  credits: ->
+    @game.state.start 'instructions_state', true, false, 'credits'
 
   nextState: ->
     @game.state.start 'playing', true, false, 1

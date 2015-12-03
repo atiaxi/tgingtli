@@ -36,10 +36,12 @@ class PreloadState extends Phaser.State
     @load.image 'instructions_screen', 'assets/instructions_1.png'
     @load.image 'win', 'assets/win.png'
     @load.image 'map', 'assets/map.png'
+    @load.image 'credits', 'assets/credits.jpg'
     # Our tile map are also our sprites
     @load.spritesheet 'map_sprites', 'assets/map.png', 32, 32
     @load.spritesheet 'instructions', 'assets/instructions_button.png', 330, 68
     @load.spritesheet 'start_button', 'assets/start_button_2.png', 200, 68
+    @load.spritesheet 'credits_button', 'assets/credits_button_1.png', 300, 68
     @load.audio('bgmusic', ['assets/Pamgaea.mp3', 'assets/Pamgaea.ogg']);
 
 
