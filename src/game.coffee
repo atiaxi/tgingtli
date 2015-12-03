@@ -237,6 +237,15 @@ class GameState extends Phaser.State
 
     @nextEmitter = @timeBetweenEmitters
 
+    # Make sure there's an open spot somewhere
+    acc = (curr, side) ->
+      curr + side.choices.length
+    spots = @choices.reduce acc, 0
+
+    if spots == 0
+      @game.state.start 'instructions_state', true, false, 'win'
+      return
+
     side = null
     until side and side.choices.length
       side = randFromArray @choices

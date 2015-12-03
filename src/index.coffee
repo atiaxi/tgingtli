@@ -34,6 +34,7 @@ class PreloadState extends Phaser.State
     @load.image 'bg', 'assets/bg.png'
     @load.image 'title_screen', 'assets/title.png'
     @load.image 'instructions_screen', 'assets/instructions_1.png'
+    @load.image 'win', 'assets/win.png'
     @load.image 'map', 'assets/map.png'
     # Our tile map are also our sprites
     @load.spritesheet 'map_sprites', 'assets/map.png', 32, 32
