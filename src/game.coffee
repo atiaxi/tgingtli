@@ -238,7 +238,7 @@ class GameState extends Phaser.State
     @nextEmitter = @timeBetweenEmitters
 
     side = null
-    until side
+    until side and side.choices.length
       side = randFromArray @choices
 
     chosen = takeRandFromArray side.choices
@@ -249,8 +249,20 @@ class GameState extends Phaser.State
       dx: side.dx,
       dy: side.dy
 
-    #emitting = [randFromArray([5, 10, 15]), randFromArray [5, 10, 15]]
-    emitting = [5]
+    emitting = switch Math.floor((@level-1) / 3)
+      when 0
+        [5]
+      when 1
+        [randFromArray [5, 10]]
+      when 2
+        [randFromArray [5, 10, 15]]
+      else
+        if randInt(40) > @level
+          [randFromArray [5, 10, 15]]
+        else
+          src = [5, 10, 15]
+          [takeRandFromArray(src), randFromArray src]
+
 
     emitter = new Emitter @game, @grid, momentum, emitting
     @game.add.existing emitter

@@ -31,7 +31,6 @@ class PreloadState extends Phaser.State
 
     @load.setPreloadSprite @preloadBar
 
-    # TODO: All the stuff to preload
     @load.image 'bg', 'assets/bg.png'
     @load.image 'title_screen', 'assets/title.png'
     @load.image 'instructions_screen', 'assets/instructions_1.png'
