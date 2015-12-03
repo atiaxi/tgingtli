@@ -249,7 +249,8 @@ class GameState extends Phaser.State
       dx: side.dx,
       dy: side.dy
 
-    emitting = [randFromArray([5, 10, 15]), randFromArray [5, 10, 15]]
+    #emitting = [randFromArray([5, 10, 15]), randFromArray [5, 10, 15]]
+    emitting = [5]
 
     emitter = new Emitter @game, @grid, momentum, emitting
     @game.add.existing emitter

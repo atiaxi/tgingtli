@@ -1,4 +1,5 @@
 
+
 class TitleState extends Phaser.State
 
   create: ->
@@ -8,18 +9,25 @@ class TitleState extends Phaser.State
       font: '32px Unique',
       fill: '#fff'
 
-    @start = @game.add.text @game.width / 2, @game.height - 10,
-      "Click to start loading", style
-    @start.anchor.set 0.5, 1
+    x = @game.width / 2
+    y = @game.height / 2
+
+    @start_button = @game.add.button x, y,
+      'start_button', @nextState, this, 0, 1, 1, 1
+    @start_button.anchor.setTo 0, 1
+
+    instructions = @game.add.button x, y,
+      'instructions', @instructions, this, 0, 1, 1, 1
 
     unless @game.pamgaea_music
       @game.pamgaea_music = @game.add.audio 'bgmusic', 1, true
       @game.pamgaea_music.play()
 
+  instructions: ->
+    @game.state.start 'instructions_state'
+
   nextState: ->
     @game.state.start 'playing', true, false, 1
 
-  update: ->
-    @nextState() if @game.input.activePointer.isDown
 
 module.exports = TitleState
