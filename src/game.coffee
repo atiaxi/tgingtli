@@ -4,11 +4,8 @@ utils = require('./utils.coffee')
 TILE_SIZE = 32
 BOARD_WIDTH = 12
 BOARD_HEIGHT = 12
-# BOARD_WIDTH = 4
-# BOARD_HEIGHT =3
 PHASES = 3
 
-console.log utils
 randInt = utils.randInt
 randIndex = utils.randIndex
 randFromArray = utils.randFromArray

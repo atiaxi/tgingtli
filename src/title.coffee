@@ -1,3 +1,4 @@
+VERSION = "1.0.0"
 
 
 class TitleState extends Phaser.State
@@ -21,6 +22,14 @@ class TitleState extends Phaser.State
 
     credits = @game.add.button x, y + 65,
       'credits_button', @credits, this, 0, 1, 1, 1
+
+    version_style =
+      font: "bold 16px Unique",
+      fill: '#fff'
+
+    version = @game.add.text 10, @game.height - 10,
+      "version #{VERSION}", version_style
+    version.anchor.setTo 0, 1
 
     unless @game.pamgaea_music
       @game.pamgaea_music = @game.add.audio 'bgmusic', 1, true
